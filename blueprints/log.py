@@ -1,6 +1,6 @@
 # blueprints/log.py
 
-from flask import Blueprint, render_template, session, redirect, url_for
+from flask import Blueprint, render_template, session, redirect, url_for, jsonify, request
 from database.apilog_db import OrderLog
 from sqlalchemy import func
 import pytz
@@ -31,4 +31,9 @@ def view_logs():
         'order_id': log.order_id,
         'created_at': log.created_at.strftime('%Y-%m-%d %H:%M:%S') if log.created_at else None
     } for log in logs]
-    return jsonify({'status': 'success', 'logs': logs_data})
+    
+    # Check if this is an API request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+        return jsonify({'status': 'success', 'logs': logs_data})
+    else:
+        return render_template('logs.html', logs=logs_data)

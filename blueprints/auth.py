@@ -13,7 +13,7 @@ import os
 import traceback
 import sqlite3
 from threading import Thread
-from database.auth_db import get_auth_token, check_user_approval, store_auth_tokens, get_user_by_username, get_user_by_id, create_user, check_user_approval
+from database.auth_db import get_auth_token, check_user_approval, store_auth_tokens, get_user_by_username, get_user_by_id, create_user, check_user_approval, upsert_auth
 from database.master_contract_db import master_contract_download
 from flask_bcrypt import Bcrypt
 
@@ -96,7 +96,7 @@ def register():
         return redirect(url_for('dashboard_bp.dashboard'))
     
     if request.method == 'GET':
-        return jsonify({'status': 'success', 'message': 'Registration endpoint ready', 'method': 'POST'})
+        return render_template('register.html')
     
     elif request.method == 'POST':
         username = request.form.get('username')
@@ -143,7 +143,7 @@ def login():
             return redirect(url_for('dashboard_bp.dashboard'))
 
         if request.method == 'GET':
-            return jsonify({'status': 'success', 'message': 'Login endpoint ready', 'method': 'POST'})
+            return render_template('login.html')
         elif request.method == 'POST':
             user_id = request.form.get('user_id')
             pin = request.form.get('pin')
@@ -255,23 +255,7 @@ def login():
                         else:
                             print(f"ERROR storing auth tokens: {token_result['message']}")
                         
-                        # Store admin status in session if applicable
-                        user_obj = get_user_by_username(username)
-                        if user_obj:
-                            print(f"DEBUG: User object found: {user_obj.username}, Admin: {getattr(user_obj, 'is_admin', False)}")
-                            # Directly query the database to get admin status
-                            try:
-                                conn = sqlite3.connect('db/openalgo.db')
-                                cursor = conn.cursor()
-                                cursor.execute("SELECT is_admin FROM users WHERE username = ?", (username,))
-                                result = cursor.fetchone()
-                                conn.close()
-                                
-                                if result and result[0]:
-                                    session['is_admin'] = True
-                                    print(f"DEBUG: Set is_admin=True in session for {username}")
-                            except Exception as db_error:
-                                print(f"ERROR checking admin status: {str(db_error)}")
+                        # Admin functionality removed - no admin checks needed
                         
                         # Start master contract download in the background
                         thread = Thread(target=async_master_contract_download, args=(user,))
@@ -281,12 +265,17 @@ def login():
                         print(f"User {username} logged in successfully")
                         
                         # Check if this is an API request (from React frontend)
-                        # Always return JSON response since we're now a pure API
-                        return jsonify({
-                            'status': 'success',
-                            'message': f'Welcome back, {username}!',
-                            'redirect': '/dashboard'
-                        })
+                        if request.headers.get('Content-Type') == 'application/json' or \
+                           request.headers.get('X-Requested-With') == 'XMLHttpRequest' or \
+                           'application/json' in request.headers.get('Accept', ''):
+                            return jsonify({
+                                'status': 'success',
+                                'message': f'Welcome back, {username}!',
+                                'redirect': '/dashboard'
+                            })
+                        else:
+                            # Redirect to dashboard for HTML form submissions
+                            return redirect(url_for('dashboard_bp.dashboard'))
                     else:
                         print("Invalid authentication token received")
                         error_msg = 'Invalid authentication token received'
@@ -349,7 +338,6 @@ def logout():
         session.pop('user', None)
         session.pop('user_id', None)
         session.pop('apikey', None)
-        session.pop('is_admin', None)
         session.pop('logged_in', None)
         session.pop('AUTH_TOKEN', None)
         session.pop('FEED_TOKEN', None)

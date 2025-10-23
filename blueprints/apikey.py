@@ -56,7 +56,7 @@ def manage_api_key():
         print(f"DEBUG - API Key Management - User ID: {user_id}, API Key: {current_api_key}")
         
         # Check if request wants JSON (from React frontend)
-        if request.headers.get('Accept') == 'application/json' or request.is_json:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
             return jsonify({
                 'status': 'success',
                 'data': {
@@ -65,8 +65,8 @@ def manage_api_key():
                 }
             })
         else:
-            # For direct browser access, redirect to React app
-            return redirect('http://localhost:5173/apikey')
+            # For browser requests, render HTML template
+            return render_template('apikey.html', api_key=current_api_key, username=username)
             
     else:  # POST request for regenerating API key
         # Get user_id from session

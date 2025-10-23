@@ -19,6 +19,9 @@ def tradingview_json():
     if not session.get('logged_in'):
         return redirect(url_for('auth.login'))  # Fixed auth_bp.login to auth.login
     
+    if request.method == 'GET':
+        return render_template('tradingview.html')
+    
     if request.method == 'POST':
         symbol_input = request.json.get('symbol')
         exchange = request.json.get('exchange')

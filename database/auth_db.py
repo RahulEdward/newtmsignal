@@ -21,7 +21,7 @@ load_dotenv()
 
 DATABASE_URL = os.getenv('DATABASE_URL')
 if not DATABASE_URL:
-    DATABASE_URL = 'sqlite:///openalgo.db'  # Default fallback
+    DATABASE_URL = 'sqlite:///db/algo.db'  # Default fallback
     print(f"WARNING: DATABASE_URL not found in .env, using default: {DATABASE_URL}")
 
 try:

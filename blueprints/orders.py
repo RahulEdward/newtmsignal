@@ -43,7 +43,11 @@ def orderbook():
             
             # Pass the data to the orderbook.html template
             print("DEBUG - Rendering template with data")
-            return jsonify({'status': 'success', 'data': order_data, 'stats': order_stats})
+            # Check if this is an API request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+                return jsonify({'status': 'success', 'data': order_data, 'stats': order_stats})
+            else:
+                return render_template('orderbook.html', order_data=order_data, order_stats=order_stats)
         except Exception as e:
             import traceback
             print(f"DEBUG - Error processing order data: {str(e)}")
@@ -85,14 +89,14 @@ def tradebook():
         print(tradebook_data)
         
         # Check if request wants JSON (from React frontend)
-        if request.headers.get('Accept') == 'application/json' or request.is_json:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
             return jsonify({
                 'status': 'success',
                 'data': tradebook_data
             })
         else:
-            # For direct browser access, redirect to React app
-            return redirect('http://localhost:5173/tradebook')
+            # For browser requests, render HTML template
+            return render_template('tradebook.html', trades=tradebook_data)
             
     except Exception as e:
         print(f"Error in tradebook API: {str(e)}")
@@ -133,14 +137,14 @@ def positions():
         print(positions_data)
         
         # Check if request wants JSON (from React frontend)
-        if request.headers.get('Accept') == 'application/json' or request.is_json:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
             return jsonify({
                 'status': 'success',
                 'data': positions_data
             })
         else:
-            # For direct browser access, redirect to React app
-            return redirect('http://localhost:5173/positions')
+            # For browser requests, render HTML template
+            return render_template('positions.html', positions=positions_data)
             
     except Exception as e:
         print(f"Error in positions API: {str(e)}")
@@ -196,7 +200,7 @@ def holdings():
             print("DEBUG - After transform:", transformed_data)
             
             # Check if request wants JSON (from React frontend)
-            if request.headers.get('Accept') == 'application/json' or request.is_json:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
                 return jsonify({
                     'status': 'success',
                     'data': {
@@ -205,8 +209,8 @@ def holdings():
                     }
                 })
             else:
-                # For direct browser access, redirect to React app
-                return redirect('http://localhost:5173/holdings')
+                # For browser requests, render HTML template
+                return render_template('holdings.html', holdings=transformed_data, portfolio_stats=portfolio_stats)
                 
         except Exception as e:
             import traceback

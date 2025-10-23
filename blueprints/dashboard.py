@@ -18,19 +18,18 @@ def dashboard():
             return jsonify({'status': 'error', 'message': 'Authentication required'}), 401
         return redirect(url_for('auth.login'))
     
-    # Check if user is approved (skip for admin users)
-    if not session.get('is_admin'):
-        username = session.get('user')  # Changed from 'username' to 'user'
-        approval_status = check_user_approval(username)
-        
-        if not approval_status['is_valid']:
-            # Clear session
-            session.clear()
-            # Check if this is an API request
-            if request.headers.get('Accept') and 'application/json' in request.headers.get('Accept', ''):
-                return jsonify({'status': 'error', 'message': approval_status['message']}), 403
-            flash(approval_status['message'], 'danger')
-            return redirect(url_for('auth.login'))
+    # Check if user is approved (admin functionality removed - all approved users can access)
+    username = session.get('user')
+    approval_status = check_user_approval(username)
+    
+    if not approval_status['is_valid']:
+        # Clear session
+        session.clear()
+        # Check if this is an API request
+        if request.headers.get('Accept') and 'application/json' in request.headers.get('Accept', ''):
+            return jsonify({'status': 'error', 'message': approval_status['message']}), 403
+        flash(approval_status['message'], 'danger')
+        return redirect(url_for('auth.login'))
     
     # Get auth_token from session
     AUTH_TOKEN = session.get('AUTH_TOKEN')  # Changed from 'auth_token' to 'AUTH_TOKEN'
@@ -72,16 +71,8 @@ def dashboard():
                 }
             })
         else:
-            # Return JSON for all requests
-            return jsonify({
-                'status': 'success',
-                'data': {
-                    'availablecash': margin_data.get('availablecash', '0.00'),
-                    'collateral': margin_data.get('collateral', '0.00'),
-                    'utiliseddebits': margin_data.get('utiliseddebits', '0.00'),
-                    'net': margin_data.get('net', '0.00')
-                }
-            })
+            # Render HTML template for browser requests
+            return render_template('dashboard.html', margin_data=margin_data)
                               
     except Exception as e:
         print(f"Error processing margin data: {e}")
