@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="TradingMaven - Advanced algorithmic trading platform with sophisticated trading algorithms and a user-friendly interface designed for both novice and experienced traders.">
+    <meta name="description" content="SecureAlgo - Advanced algorithmic trading platform with sophisticated trading algorithms and a user-friendly interface designed for both novice and experienced traders.">
 
     <!-- Page Title & Favicon -->
-    <title>TradingMaven - Trading Platform for Everyone</title>
+    <title>SecureAlgo - Trading Platform for Everyone</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
 
     <!-- Tailwind CSS, DaisyUI and Custom Font -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Landing Page Animations -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing-animations.css') }}">
     
     <script>
         tailwind.config = {
@@ -22,9 +25,9 @@
                         sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#3B82F6',
-                        accent: '#10B981',
-                        dark: '#111827',
+                        primary: '#ff6b35',
+                        accent: '#ff9500',
+                        dark: '#000000',
                     }
                 }
             },
@@ -42,155 +45,208 @@
     <link rel="mask-icon" href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}" color="#5bbad5">
     
     <!-- Meta tags for color settings -->
-    <meta name="msapplication-TileColor" content="#3B82F6">
-    <meta name="theme-color" content="#111827">
+    <meta name="msapplication-TileColor" content="#ff6b35">
+    <meta name="theme-color" content="#000000">
     
     <style>
         .bg-mesh {
-            background-color: #0F172A;
+            background-color: #0a0a0a;
             background-image: 
-                radial-gradient(at 47% 33%, hsl(218, 41%, 13%) 0, transparent 59%), 
-                radial-gradient(at 82% 65%, hsl(218, 39%, 11%) 0, transparent 55%);
+                radial-gradient(at 47% 33%, rgba(255, 107, 53, 0.15) 0, transparent 59%), 
+                radial-gradient(at 82% 65%, rgba(255, 140, 66, 0.12) 0, transparent 55%),
+                radial-gradient(at 10% 80%, rgba(255, 87, 34, 0.1) 0, transparent 50%);
         }
         
-        .glow {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        /* Enhanced animated mesh background for hero */
+        .hero-bg-animated {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-bg-animated::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(at 20% 30%, rgba(255, 107, 53, 0.2) 0, transparent 50%),
+                radial-gradient(at 80% 70%, rgba(255, 140, 66, 0.15) 0, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(255, 149, 0, 0.12) 0, transparent 50%);
+            animation: gradientShift 20s ease infinite;
         }
     </style>
 </head>
 
-<body class="min-h-screen bg-mesh text-gray-100">
+<body class="min-h-screen bg-mesh" style="color: #ffb380;">
     <!-- Navbar -->
-    <nav class="bg-dark/80 backdrop-blur-lg border-b border-gray-800 fixed top-0 left-0 right-0 z-50">
+    <nav class="backdrop-blur-lg border-b fixed top-0 left-0 right-0 z-50" style="background: rgba(10, 10, 10, 0.95); border-color: rgba(255, 107, 53, 0.4); box-shadow: 0 4px 20px rgba(255, 107, 53, 0.1);">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex-shrink-0">
                     <a href="{{ url_for('dashboard_bp.dashboard') }}" class="flex items-center">
-                        <img src="{{ url_for('static', filename='favicon/logo.png') }}" alt="TradingMaven Logo" class="h-8 mr-2">
-                        <span class="text-xl font-semibold text-white">TradingMaven</span>
+                        <span class="text-xl font-semibold" style="color: #ff6b35;">SecureAlgo</span>
                     </a>
                 </div>
                 
                 <!-- Navigation Links -->
                 <div class="hidden md:flex space-x-4 mr-4">
-                    <a href="{{ url_for('core_bp.home') }}" class="text-gray-200 px-3 py-2 rounded-md font-medium hover:bg-primary/20 hover:text-white transition-all duration-200">Home</a>
-                    <a href="{{ url_for('core_bp.about') }}" class="text-gray-200 px-3 py-2 rounded-md font-medium hover:bg-primary/20 hover:text-white transition-all duration-200">About Us</a>
+                    <a href="{{ url_for('core_bp.home') }}" class="nav-link px-3 py-2 rounded-md font-medium active" style="color: #ff8c42;">Home</a>
+                    <a href="{{ url_for('core_bp.about') }}" class="nav-link px-3 py-2 rounded-md font-medium" style="color: #ff8c42;">About Us</a>
                 </div>
                 
                 <!-- Auth buttons -->
                 <div class="flex items-center space-x-3">
-                    <a href="{{ url_for('auth.login') }}" class="border border-blue-600 text-white px-6 py-2 rounded-md font-medium transition-all duration-200 hover:bg-blue-800/50">Log in</a>
-                    <a href="{{ url_for('auth.register') }}" class="bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-all duration-200 hover:bg-blue-800">Register</a>
+                    <a href="{{ url_for('auth.login') }}" class="border px-6 py-2 rounded-md font-medium transition-all duration-200" style="border-color: #ff6b35; color: #ff8c42; background: transparent;">Log in</a>
+                    <a href="{{ url_for('auth.register') }}" class="px-6 py-2 rounded-md font-medium transition-all duration-200" style="background: #ff6b35; color: #000000;">Register</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <div class="hero min-h-screen pt-16">
-        <div class="hero-content flex-col text-center">
+    <div class="hero min-h-screen pt-16 hero-bg-animated">
+        <div class="hero-content flex-col text-center relative z-10">
             <div class="max-w-4xl px-4">
-                <img src="{{ url_for('static', filename='favicon/logo.png') }}" alt="TradingMaven Logo" class="mx-auto mb-10 h-24">
-                
-                <h1 class="text-5xl sm:text-6xl font-bold mb-6 leading-tight">
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Take Control of Your Algo Platform</span>
+                <h1 class="text-5xl sm:text-6xl font-bold mb-6 leading-tight hero-fade-in" style="margin-top: 2rem;">
+                    <span class="gradient-text-hero">Take Control of Your Algo Platform</span>
                 </h1>
                 
-                <p class="mb-10 text-xl text-gray-300">
+                <p class="mb-10 text-xl hero-fade-in-delayed" style="color: #ffb380;">
                     Algo Platform for Everyone
                 </p>
                 
-                <div class="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg glow">Get Started Today</a>
-                    <a href="#features" class="btn btn-outline btn-lg">View Features</a>
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mb-16 hero-fade-in-delayed-2">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-lg cta-magnetic ripple-container" style="background: #ff6b35; color: #000000; border: none;">Get Started Today</a>
+                    <a href="#features" class="btn btn-lg smooth-scroll" style="border: 2px solid #ff6b35; color: #ff8c42; background: transparent;">View Features</a>
                 </div>
                 
                 <!-- Stats Section -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                    <div class="bg-dark/50 backdrop-blur-md p-6 rounded-lg border border-gray-800">
-                        <div class="text-primary text-4xl font-bold mb-2">99.9%</div>
-                        <div class="text-gray-400">Platform Uptime</div>
+                    <div class="stat-card glass-effect p-6 rounded-lg border scroll-fade-in stagger-1" style="border-color: rgba(255, 107, 53, 0.5); background: rgba(255, 107, 53, 0.05);">
+                        <div class="text-4xl font-bold mb-2 stat-counter" style="color: #ff6b35;" data-target="99.9" data-suffix="%" data-duration="2500">0%</div>
+                        <div style="color: #ffb380;">Platform Uptime</div>
                     </div>
-                    <div class="bg-dark/50 backdrop-blur-md p-6 rounded-lg border border-gray-800">
-                        <div class="text-primary text-4xl font-bold mb-2">10ms</div>
-                        <div class="text-gray-400">Order Execution</div>
+                    <div class="stat-card glass-effect p-6 rounded-lg border scroll-fade-in stagger-2" style="border-color: rgba(255, 107, 53, 0.5); background: rgba(255, 107, 53, 0.05);">
+                        <div class="text-4xl font-bold mb-2 stat-counter" style="color: #ff6b35;" data-target="10" data-suffix="ms" data-duration="2000">0ms</div>
+                        <div style="color: #ffb380;">Order Execution</div>
                     </div>
-                    <div class="bg-dark/50 backdrop-blur-md p-6 rounded-lg border border-gray-800">
-                        <div class="text-primary text-4xl font-bold mb-2">24/7</div>
-                        <div class="text-gray-400">Market Monitoring</div>
+                    <div class="stat-card glass-effect p-6 rounded-lg border scroll-fade-in stagger-3" style="border-color: rgba(255, 107, 53, 0.5); background: rgba(255, 107, 53, 0.05);">
+                        <div class="text-4xl font-bold mb-2">
+                            <span class="gradient-text-accent">24/7</span>
+                        </div>
+                        <div style="color: #ffb380;">Market Monitoring</div>
                     </div>
                 </div>
                 
                 <!-- Features Section -->
                 <section id="features" class="py-16">
-                    <h2 class="text-3xl font-bold mb-12 inline-block border-b-2 border-primary pb-2">Platform Features</h2>
+                    <h2 class="text-3xl font-bold mb-12 inline-block border-b-2 pb-2 gradient-text" style="border-color: #ff6b35;">Platform Features</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div class="card bg-dark/50 backdrop-blur-md border border-gray-800 hover:border-primary transition-all duration-300">
+                        <div class="card feature-card glass-effect border scroll-fade-in stagger-1" style="border-color: rgba(255, 107, 53, 0.5); background: rgba(255, 107, 53, 0.03);">
                             <div class="card-body items-center text-center">
-                                <div class="bg-primary/10 p-4 rounded-full mb-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-primary">
+                                <div class="p-4 rounded-full mb-4" style="background: rgba(255, 107, 53, 0.15);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 feature-icon-animate" style="color: #ff6b35;">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" />
                                     </svg>
                                 </div>
-                                <h2 class="card-title text-xl mb-2">Advanced Algorithms</h2>
-                                <p class="text-gray-400">Market-tested trading algorithms with proven performance</p>
+                                <h2 class="card-title text-xl mb-2" style="color: #ffb380;">Advanced Algorithms</h2>
+                                <p style="color: #ff9f66;">Market-tested trading algorithms with proven performance</p>
                             </div>
                         </div>
                         
-                        <div class="card bg-dark/50 backdrop-blur-md border border-gray-800 hover:border-primary transition-all duration-300">
+                        <div class="card feature-card glass-effect border scroll-fade-in stagger-2" style="border-color: rgba(255, 107, 53, 0.5); background: rgba(255, 107, 53, 0.03);">
                             <div class="card-body items-center text-center">
-                                <div class="bg-primary/10 p-4 rounded-full mb-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-primary">
+                                <div class="p-4 rounded-full mb-4" style="background: rgba(255, 107, 53, 0.15);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 feature-icon-animate" style="color: #ff6b35;">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
                                     </svg>
                                 </div>
-                                <h2 class="card-title text-xl mb-2">Real-Time Analytics</h2>
-                                <p class="text-gray-400">Comprehensive dashboards with market insights</p>
+                                <h2 class="card-title text-xl mb-2" style="color: #ffb380;">Real-Time Analytics</h2>
+                                <p style="color: #ff9f66;">Comprehensive dashboards with market insights</p>
                             </div>
                         </div>
                         
-                        <div class="card bg-dark/50 backdrop-blur-md border border-gray-800 hover:border-primary transition-all duration-300">
+                        <div class="card feature-card glass-effect border scroll-fade-in stagger-3" style="border-color: rgba(255, 107, 53, 0.5); background: rgba(255, 107, 53, 0.03);">
                             <div class="card-body items-center text-center">
-                                <div class="bg-primary/10 p-4 rounded-full mb-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-primary">
+                                <div class="p-4 rounded-full mb-4" style="background: rgba(255, 107, 53, 0.15);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 feature-icon-animate" style="color: #ff6b35;">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                                     </svg>
                                 </div>
-                                <h2 class="card-title text-xl mb-2">Enterprise Security</h2>
-                                <p class="text-gray-400">Bank-grade encryption and security protocols</p>
+                                <h2 class="card-title text-xl mb-2" style="color: #ffb380;">Enterprise Security</h2>
+                                <p style="color: #ff9f66;">Bank-grade encryption and security protocols</p>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <!-- Platform Preview -->
-                <section class="py-16">
-                    <div class="rounded-xl overflow-hidden border border-gray-800 shadow-2xl">
-                        <div class="bg-dark p-2 border-b border-gray-800">
+                <section class="py-16 scroll-scale-in">
+                    <div class="rounded-xl overflow-hidden border shadow-2xl glass-effect" style="border-color: rgba(255, 107, 53, 0.5); background: rgba(255, 107, 53, 0.02);">
+                        <div class="p-2 border-b" style="background: rgba(20, 20, 20, 0.9); border-color: rgba(255, 107, 53, 0.4);">
                             <div class="flex space-x-2">
                                 <div class="w-3 h-3 rounded-full bg-red-500"></div>
                                 <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
                                 <div class="w-3 h-3 rounded-full bg-green-500"></div>
                             </div>
                         </div>
-                        <div class="bg-gradient-to-b from-gray-900 to-gray-800 p-6 h-64 flex items-center justify-center">
-                            <p class="text-xl font-medium text-center text-gray-400">
-                                Advanced Trading Dashboard<br>
-                                <span class="text-sm opacity-70">Real-time market data and execution</span>
+                        <div class="p-6 h-64 flex items-center justify-center" style="background: linear-gradient(135deg, rgba(255, 107, 53, 0.15) 0%, rgba(255, 140, 66, 0.1) 50%, rgba(255, 149, 0, 0.15) 100%);">
+                            <p class="text-xl font-medium text-center">
+                                <span class="gradient-text-hero text-2xl font-bold">Advanced Trading Dashboard</span><br>
+                                <span class="text-sm mt-2 block" style="color: #ffb380;">Real-time market data and execution</span>
                             </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Trust & Security Section -->
+                <section class="py-16 scroll-fade-in">
+                    <div class="text-center mb-12">
+                        <h3 class="text-2xl font-bold mb-4 gradient-text">Trusted by Traders Worldwide</h3>
+                        <p style="color: #ffb380;">Enterprise-grade security and reliability</p>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="glass-effect p-6 rounded-lg border text-center scroll-fade-in stagger-1" style="border-color: rgba(255, 107, 53, 0.5); background: rgba(255, 107, 53, 0.05);">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-3" style="color: #ff6b35;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                            </svg>
+                            <p class="text-sm font-medium" style="color: #ffb380;">SSL Encrypted</p>
+                        </div>
+                        <div class="glass-effect p-6 rounded-lg border text-center scroll-fade-in stagger-2" style="border-color: rgba(255, 107, 53, 0.5); background: rgba(255, 107, 53, 0.05);">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-3" style="color: #ff9500;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p class="text-sm font-medium" style="color: #ffb380;">24/7 Monitoring</p>
+                        </div>
+                        <div class="glass-effect p-6 rounded-lg border text-center scroll-fade-in stagger-3" style="border-color: rgba(255, 107, 53, 0.5); background: rgba(255, 107, 53, 0.05);">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-3" style="color: #ff6b35;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                            </svg>
+                            <p class="text-sm font-medium" style="color: #ffb380;">Secure Payments</p>
+                        </div>
+                        <div class="glass-effect p-6 rounded-lg border text-center scroll-fade-in stagger-4" style="border-color: rgba(255, 107, 53, 0.5); background: rgba(255, 107, 53, 0.05);">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 mx-auto mb-3" style="color: #ff9500;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
+                            </svg>
+                            <p class="text-sm font-medium" style="color: #ffb380;">API Security</p>
                         </div>
                     </div>
                 </section>
                 
                 <!-- CTA Section -->
-                <section class="py-16">
-                    <div class="card bg-gradient-to-r from-primary/20 to-accent/20 shadow-xl border border-gray-800">
+                <section class="py-16 scroll-scale-in">
+                    <div class="card cta-gradient-animate glass-effect shadow-xl border" style="border-color: rgba(255, 107, 53, 0.6); background: rgba(255, 107, 53, 0.05);">
                         <div class="card-body items-center text-center p-12">
-                            <h2 class="card-title text-3xl mb-4">Ready to Transform Your Trading?</h2>
-                            <p class="mb-8 text-xl text-gray-300">Start trading with confidence using TradingMaven's advanced platform</p>
+                            <h2 class="card-title text-3xl mb-4 gradient-text-hero">Ready to Transform Your Trading?</h2>
+                            <p class="mb-8 text-xl" style="color: #ffb380;">Start trading with confidence using SecureAlgo's advanced platform</p>
                             <div class="card-actions">
-                                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg glow">Get Started Now</a>
+                                <a href="{{ url_for('auth.login') }}" class="btn btn-lg cta-magnetic ripple-container glow-strong" style="background: #ff6b35; color: #000000; border: none; font-weight: 600;">Get Started Now</a>
                             </div>
                         </div>
                     </div>
@@ -201,5 +257,9 @@
 
     <!-- Footer -->
     {% include 'footer.html' %}
+
+    <!-- Landing Page JavaScript -->
+    <script src="{{ url_for('static', filename='js/counter-animation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/landing-animations.js') }}"></script>
 </body>
 </html>
