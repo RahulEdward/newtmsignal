@@ -120,9 +120,13 @@ def debug_info():
     """Debug endpoint to check environment variables"""
     return jsonify({
         "has_postgres_url": bool(os.environ.get('POSTGRES_URL')),
+        "has_db_postgres_url": bool(os.environ.get('db_POSTGRES_URL')),
         "has_database_url": bool(os.environ.get('DATABASE_URL')),
+        "has_db_database_url": bool(os.environ.get('db_DATABASE_URL')),
         "database_type": "postgresql" if "postgresql" in app.config['SQLALCHEMY_DATABASE_URI'] else "sqlite",
-        "app_key_set": bool(os.environ.get('APP_KEY'))
+        "database_url_preview": app.config['SQLALCHEMY_DATABASE_URI'][:50] + "...",
+        "app_key_set": bool(os.environ.get('APP_KEY')),
+        "all_env_vars": [key for key in os.environ.keys() if 'POSTGRES' in key or 'DATABASE' in key]
     })
 
 @app.errorhandler(404)
