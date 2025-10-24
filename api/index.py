@@ -56,11 +56,8 @@ CORS(app,
      expose_headers=["Content-Type", "Authorization"])
 
 # Initialize extensions
-try:
-    from extensions import socketio
-    socketio.init_app(app, cors_allowed_origins="*")
-except Exception as e:
-    print(f"SocketIO initialization skipped: {e}")
+# Socket.IO disabled for Vercel serverless deployment
+print("ℹ️ Socket.IO disabled for serverless deployment")
 
 try:
     from database.db import db
