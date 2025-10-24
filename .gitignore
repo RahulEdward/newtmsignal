@@ -8,6 +8,7 @@ Thumbs.db
 .vscode/
 .idea/
 .python-version
+.kiro/
 
 
 #DB Files and Log/Tmp Files

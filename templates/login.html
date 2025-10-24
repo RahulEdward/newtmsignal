@@ -30,9 +30,6 @@
         }
     </style>
     <div class="backdrop-blur-lg p-8 rounded-lg shadow-lg max-w-sm w-full border" style="background: rgba(10, 10, 10, 0.9); border-color: rgba(255, 107, 53, 0.5);">
-        <div class="flex justify-center mb-6">
-            <img class="h-20 w-auto" src="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}" alt="SecureAlgo">
-        </div>
         <h2 class="text-3xl font-bold mb-6 text-center" style="color: #ff6b35;">Sign in to SecureAlgo</h2>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -48,7 +45,7 @@
         <form action="{{ url_for('auth.login') }}" method="POST" class="space-y-6">
             <div>
                 <label for="user_id" class="block text-sm font-medium" style="color: #ffb380;">Client ID</label>
-                <input type="text" id="user_id" name="user_id" required class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none" style="background: #1a1a1a; color: #ffb380; border-color: rgba(255, 107, 53, 0.3); focus:border-color: #ff6b35;">
+                <input type="text" id="user_id" name="user_id" required class="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:border-[#ff6b35]" style="background: #1a1a1a; color: #ffb380; border-color: rgba(255, 107, 53, 0.3);">
             </div>
             <div>
                 <label for="pin" class="block text-sm font-medium" style="color: #ffb380;">PIN</label>

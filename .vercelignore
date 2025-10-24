@@ -1,0 +1,14 @@
+venv/
+__pycache__/
+*.pyc
+.env
+.git/
+.vscode/
+tmp/
+instance/
+*.db
+db/*.db
+.kiro/
+docs/
+start-dev.bat
+start-dev.ps1
