@@ -66,50 +66,107 @@ try:
     from database.db import db
     db.init_app(app)
     
-    # Initialize database tables on first request
-    @app.before_first_request
-    def init_database():
-        try:
-            from database.auth_db import init_db as ensure_auth_tables_exists
-            from database.master_contract_db import init_db as ensure_master_contract_tables_exists
-            from database.apilog_db import init_db as ensure_api_log_tables_exists
-            
-            with app.app_context():
-                ensure_auth_tables_exists()
-                ensure_master_contract_tables_exists()
-                ensure_api_log_tables_exists()
-        except Exception as e:
-            print(f"Database initialization error: {e}")
+    # Initialize database tables immediately (not on first request for serverless)
+    print("🔄 Initializing database tables...")
+    try:
+        from database.auth_db import init_db as ensure_auth_tables_exists
+        from database.master_contract_db import init_db as ensure_master_contract_tables_exists
+        from database.apilog_db import init_db as ensure_api_log_tables_exists
+        
+        with app.app_context():
+            print("📊 Creating auth tables...")
+            ensure_auth_tables_exists()
+            print("📊 Creating master contract tables...")
+            ensure_master_contract_tables_exists()
+            print("📊 Creating API log tables...")
+            ensure_api_log_tables_exists()
+            print("✅ All database tables initialized successfully!")
+    except Exception as e:
+        print(f"❌ Database initialization error: {e}")
+        import traceback
+        traceback.print_exc()
 except Exception as e:
-    print(f"Database setup error: {e}")
+    print(f"❌ Database setup error: {e}")
+    import traceback
+    traceback.print_exc()
 
 # Register blueprints
+blueprints_registered = []
+try:
+    from blueprints.core import core_bp
+    app.register_blueprint(core_bp)
+    blueprints_registered.append('core_bp')
+    print("✅ Core blueprint registered")
+except Exception as e:
+    print(f"❌ Core blueprint error: {e}")
+
 try:
     from blueprints.auth import auth_bp
-    from blueprints.dashboard import dashboard_bp
-    from blueprints.orders import orders_bp
-    from blueprints.search import search_bp
-    from blueprints.api_v1 import api_v1_bp
-    from blueprints.apikey import api_key_bp
-    from blueprints.log import log_bp
-    from blueprints.tv_json import tv_json_bp
-    from blueprints.core import core_bp
-    
     app.register_blueprint(auth_bp)
-    app.register_blueprint(dashboard_bp)
-    app.register_blueprint(orders_bp)
-    app.register_blueprint(search_bp)
-    app.register_blueprint(api_v1_bp)
-    app.register_blueprint(api_key_bp)
-    app.register_blueprint(log_bp)
-    app.register_blueprint(tv_json_bp)
-    app.register_blueprint(core_bp)
+    blueprints_registered.append('auth_bp')
+    print("✅ Auth blueprint registered")
 except Exception as e:
-    print(f"Blueprint registration error: {e}")
+    print(f"❌ Auth blueprint error: {e}")
 
-@app.route('/')
-def home():
-    return "App is running!"
+try:
+    from blueprints.dashboard import dashboard_bp
+    app.register_blueprint(dashboard_bp)
+    blueprints_registered.append('dashboard_bp')
+    print("✅ Dashboard blueprint registered")
+except Exception as e:
+    print(f"❌ Dashboard blueprint error: {e}")
+
+try:
+    from blueprints.orders import orders_bp
+    app.register_blueprint(orders_bp)
+    blueprints_registered.append('orders_bp')
+    print("✅ Orders blueprint registered")
+except Exception as e:
+    print(f"❌ Orders blueprint error: {e}")
+
+try:
+    from blueprints.search import search_bp
+    app.register_blueprint(search_bp)
+    blueprints_registered.append('search_bp')
+    print("✅ Search blueprint registered")
+except Exception as e:
+    print(f"❌ Search blueprint error: {e}")
+
+try:
+    from blueprints.api_v1 import api_v1_bp
+    app.register_blueprint(api_v1_bp)
+    blueprints_registered.append('api_v1_bp')
+    print("✅ API v1 blueprint registered")
+except Exception as e:
+    print(f"❌ API v1 blueprint error: {e}")
+
+try:
+    from blueprints.apikey import api_key_bp
+    app.register_blueprint(api_key_bp)
+    blueprints_registered.append('api_key_bp')
+    print("✅ API Key blueprint registered")
+except Exception as e:
+    print(f"❌ API Key blueprint error: {e}")
+
+try:
+    from blueprints.log import log_bp
+    app.register_blueprint(log_bp)
+    blueprints_registered.append('log_bp')
+    print("✅ Log blueprint registered")
+except Exception as e:
+    print(f"❌ Log blueprint error: {e}")
+
+try:
+    from blueprints.tv_json import tv_json_bp
+    app.register_blueprint(tv_json_bp)
+    blueprints_registered.append('tv_json_bp')
+    print("✅ TV JSON blueprint registered")
+except Exception as e:
+    print(f"❌ TV JSON blueprint error: {e}")
+
+print(f"Total blueprints registered: {len(blueprints_registered)}")
+
+# Home route is handled by core_bp blueprint
 
 @app.route('/api/test', methods=['GET', 'OPTIONS'])
 def test_cors():
