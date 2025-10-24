@@ -16,7 +16,18 @@ from extensions import socketio  # Import SocketIO
 
 load_dotenv()
 
-DATABASE_URL = os.getenv('DATABASE_URL')  # Replace with your database path
+# Try multiple environment variable names for database URL (with and without db_ prefix)
+DATABASE_URL = (
+    os.environ.get('POSTGRES_URL') or 
+    os.environ.get('db_POSTGRES_URL') or 
+    os.environ.get('POSTGRES_PRISMA_URL') or 
+    os.environ.get('db_POSTGRES_PRISMA_URL') or 
+    os.environ.get('db_DATABASE_URL') or 
+    os.environ.get('DATABASE_URL') or 
+    'sqlite:///tmp/algo.db'  # Use /tmp for serverless fallback
+)
+
+print(f"Master Contract DB using: {DATABASE_URL[:50]}...")
 
 engine = create_engine(DATABASE_URL)
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
