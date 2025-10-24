@@ -18,10 +18,24 @@ app.debug = False
 
 # Set secret key and config
 app.secret_key = os.getenv('APP_KEY', 'default-secret-key-change-this')
-# Use POSTGRES_URL from Neon, fallback to DATABASE_URL, then SQLite
-database_url = os.getenv('POSTGRES_URL') or os.getenv('DATABASE_URL', 'sqlite:///db/algo.db')
+
+# Try multiple environment variable names for database URL
+database_url = (
+    os.environ.get('POSTGRES_URL') or 
+    os.environ.get('POSTGRES_PRISMA_URL') or 
+    os.environ.get('DATABASE_URL') or 
+    'sqlite:///tmp/algo.db'  # Use /tmp for serverless
+)
+
+# Debug: Print which database is being used (remove in production)
+print(f"Using database: {database_url[:30]}...")
+
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_pre_ping': True,
+    'pool_recycle': 300,
+}
 
 # Session configuration
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
@@ -97,6 +111,16 @@ def home():
 @app.route('/api/test', methods=['GET', 'OPTIONS'])
 def test_cors():
     return jsonify({"status": "success", "message": "CORS is working!"})
+
+@app.route('/api/debug', methods=['GET'])
+def debug_info():
+    """Debug endpoint to check environment variables"""
+    return jsonify({
+        "has_postgres_url": bool(os.environ.get('POSTGRES_URL')),
+        "has_database_url": bool(os.environ.get('DATABASE_URL')),
+        "database_type": "postgresql" if "postgresql" in app.config['SQLALCHEMY_DATABASE_URI'] else "sqlite",
+        "app_key_set": bool(os.environ.get('APP_KEY'))
+    })
 
 @app.errorhandler(404)
 def not_found_error(error):
