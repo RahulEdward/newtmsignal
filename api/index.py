@@ -18,7 +18,9 @@ app.debug = False
 
 # Set secret key and config
 app.secret_key = os.getenv('APP_KEY', 'default-secret-key-change-this')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///db/algo.db')
+# Use POSTGRES_URL from Neon, fallback to DATABASE_URL, then SQLite
+database_url = os.getenv('POSTGRES_URL') or os.getenv('DATABASE_URL', 'sqlite:///db/algo.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Session configuration
