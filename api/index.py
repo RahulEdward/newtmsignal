@@ -183,6 +183,20 @@ def debug_info():
         "all_env_vars": [key for key in os.environ.keys() if 'POSTGRES' in key or 'DATABASE' in key]
     })
 
+@app.route('/api/download-symbols', methods=['GET'])
+def download_symbols():
+    """Manual endpoint to download master contract symbols"""
+    try:
+        from database.master_contract_db import master_contract_download
+        print("Starting master contract download...")
+        result = master_contract_download()
+        return jsonify({'status': 'success', 'message': 'Master contract download completed', 'result': result})
+    except Exception as e:
+        print(f"Download error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'status': 'error', 'message': str(e)})
+
 @app.errorhandler(404)
 def not_found_error(error):
     return jsonify({'status': 'error', 'message': 'Endpoint not found'}), 404
