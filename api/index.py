@@ -67,7 +67,7 @@ try:
     print("🔄 Initializing database tables...")
     try:
         from database.auth_db import init_db as ensure_auth_tables_exists
-        from database.master_contract_db import init_db as ensure_master_contract_tables_exists
+        from database.master_contract_db import init_db as ensure_master_contract_tables_exists, SymToken
         from database.apilog_db import init_db as ensure_api_log_tables_exists
         
         with app.app_context():
@@ -77,7 +77,31 @@ try:
             ensure_master_contract_tables_exists()
             print("📊 Creating API log tables...")
             ensure_api_log_tables_exists()
-            print("✅ All database tables initialized successfully!")
+            
+            # Check if symbols exist, if not download them
+            try:
+                symbol_count = SymToken.query.count()
+                print(f"Current symbol count: {symbol_count}")
+                
+                if symbol_count < 100:  # If less than 100 symbols, download fresh data
+                    print("🔄 Downloading master contract symbols...")
+                    from database.master_contract_db import master_contract_download
+                    result = master_contract_download()
+                    print(f"Master contract download result: {result}")
+                else:
+                    print("✅ Symbols already exist in database")
+                    
+            except Exception as e:
+                print(f"⚠️ Symbol check/download error: {e}")
+                # Add some basic symbols as fallback
+                try:
+                    from database.master_contract_db import add_sample_data
+                    add_sample_data()
+                    print("✅ Added sample symbols as fallback")
+                except Exception as fallback_error:
+                    print(f"❌ Fallback sample data error: {fallback_error}")
+            
+            print("✅ All database initialization completed!")
     except Exception as e:
         print(f"❌ Database initialization error: {e}")
         import traceback

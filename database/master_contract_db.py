@@ -216,31 +216,34 @@ def master_contract_download():
     print("Downloading Master Contract")
     url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
     
-    # Create tmp directory if it doesn't exist
-    import os
-    os.makedirs('tmp', exist_ok=True)
-    output_path = 'tmp/angel.json'
-    
     try:
+        # For serverless, use in-memory processing instead of file system
         print("Starting download from Angel Broking...")
-        download_json_angel_data(url, output_path)
+        import requests
+        import json
+        
+        response = requests.get(url, timeout=30)
+        if response.status_code != 200:
+            raise Exception(f"Failed to download data. Status code: {response.status_code}")
+        
         print("Processing downloaded data...")
-        token_df = process_angel_json(output_path)
-        print("Cleaning up temporary files...")
-        delete_angel_temp_data(output_path)
+        data = response.json()
+        
+        # Process data directly without saving to file
+        token_df = process_angel_data_direct(data)
         
         print("Clearing existing data...")
-        delete_symtoken_table()  # Consider the implications of this action
+        delete_symtoken_table()
         print("Inserting new data...")
         copy_from_dataframe(token_df)
         print(f"Master contract download completed successfully! Total symbols: {len(token_df)}")
         
         # Try to emit socket event, but don't fail if it doesn't work (Vercel serverless)
         try:
-            return socketio.emit('master_contract_download', {'status': 'success', 'message': 'Successfully Downloaded'})
+            return socketio.emit('master_contract_download', {'status': 'success', 'message': f'Successfully Downloaded {len(token_df)} symbols'})
         except:
             print("Socket.IO emit failed (expected on serverless)")
-            return {'status': 'success', 'message': 'Successfully Downloaded'}
+            return {'status': 'success', 'message': f'Successfully Downloaded {len(token_df)} symbols'}
 
     except Exception as e:
         print(f"Master contract download failed: {str(e)}")
@@ -251,6 +254,45 @@ def master_contract_download():
         except:
             print("Socket.IO emit failed (expected on serverless)")
             return {'status': 'error', 'message': str(e)}
+
+def process_angel_data_direct(data):
+    """Process Angel Broking data directly from JSON without file operations"""
+    import pandas as pd
+    
+    print("Processing Angel Broking data...")
+    
+    # Convert to DataFrame
+    df = pd.DataFrame(data)
+    
+    # Apply the same processing as process_angel_json
+    df['symbol'] = df.apply(reformat_symbol, axis=1)
+    
+    # Filter and clean data
+    df = df[df['exch_seg'].isin(['NSE', 'BSE', 'NFO', 'BFO', 'CDS', 'MCX'])]
+    df = df.rename(columns={
+        'exch_seg': 'exchange',
+        'token': 'token',
+        'symbol': 'brsymbol',
+        'name': 'name',
+        'expiry': 'expiry',
+        'strike': 'strike',
+        'lotsize': 'lotsize',
+        'instrumenttype': 'instrumenttype',
+        'tick_size': 'tick_size'
+    })
+    
+    # Create the symbol column
+    df['symbol'] = df['brsymbol']
+    df['brexchange'] = df['exchange']
+    
+    # Fill NaN values
+    df = df.fillna('')
+    df['strike'] = pd.to_numeric(df['strike'], errors='coerce').fillna(0)
+    df['lotsize'] = pd.to_numeric(df['lotsize'], errors='coerce').fillna(1)
+    df['tick_size'] = pd.to_numeric(df['tick_size'], errors='coerce').fillna(0.05)
+    
+    print(f"Processed {len(df)} symbols")
+    return df
 
 
 
