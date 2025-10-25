@@ -236,6 +236,67 @@ def master_contract_download():
 
 
 
+def add_sample_data():
+    """Add some sample symbols for testing"""
+    try:
+        # Check if data already exists
+        existing = SymToken.query.first()
+        if existing:
+            print("Sample data already exists")
+            return
+            
+        sample_symbols = [
+            SymToken(symbol='RELIANCE', brsymbol='RELIANCE-EQ', name='Reliance Industries Ltd', 
+                    exchange='NSE', brexchange='NSE', token='2885', expiry='', strike=0, 
+                    lotsize=1, instrumenttype='EQ', tick_size=0.05),
+            SymToken(symbol='TCS', brsymbol='TCS-EQ', name='Tata Consultancy Services Ltd', 
+                    exchange='NSE', brexchange='NSE', token='11536', expiry='', strike=0, 
+                    lotsize=1, instrumenttype='EQ', tick_size=0.05),
+            SymToken(symbol='INFY', brsymbol='INFY-EQ', name='Infosys Ltd', 
+                    exchange='NSE', brexchange='NSE', token='1594', expiry='', strike=0, 
+                    lotsize=1, instrumenttype='EQ', tick_size=0.05),
+            SymToken(symbol='HDFC', brsymbol='HDFCBANK-EQ', name='HDFC Bank Ltd', 
+                    exchange='NSE', brexchange='NSE', token='1333', expiry='', strike=0, 
+                    lotsize=1, instrumenttype='EQ', tick_size=0.05),
+            SymToken(symbol='ICICIBANK', brsymbol='ICICIBANK-EQ', name='ICICI Bank Ltd', 
+                    exchange='NSE', brexchange='NSE', token='4963', expiry='', strike=0, 
+                    lotsize=1, instrumenttype='EQ', tick_size=0.05),
+        ]
+        
+        for symbol in sample_symbols:
+            db_session.add(symbol)
+        
+        db_session.commit()
+        print("Sample data added successfully")
+        
+    except Exception as e:
+        print(f"Error adding sample data: {e}")
+        db_session.rollback()
+
 def search_symbols(symbol, exchange):
-    return SymToken.query.filter(SymToken.symbol.like(f'%{symbol}%'), SymToken.exchange == exchange).all()
+    try:
+        # Ensure sample data exists
+        count = SymToken.query.count()
+        if count == 0:
+            print("No data found, adding sample data...")
+            add_sample_data()
+        
+        # Case-insensitive search with ILIKE (PostgreSQL) or LIKE with UPPER (SQLite)
+        if 'postgresql' in DATABASE_URL.lower():
+            results = SymToken.query.filter(
+                SymToken.symbol.ilike(f'%{symbol}%'), 
+                SymToken.exchange == exchange
+            ).limit(50).all()
+        else:
+            # For SQLite, use UPPER for case-insensitive search
+            results = SymToken.query.filter(
+                SymToken.symbol.like(f'%{symbol.upper()}%'), 
+                SymToken.exchange == exchange
+            ).limit(50).all()
+        
+        print(f"Search for '{symbol}' in '{exchange}' returned {len(results)} results")
+        return results
+    except Exception as e:
+        print(f"Search error: {e}")
+        return []
 

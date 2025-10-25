@@ -11,7 +11,7 @@
 
 {% block content %}
 <div class="container mx-auto px-4 bg-dark min-h-screen">
-    <h1 class="text-xl font-semibold text-center mb-4 text-primary">Search Results</h1>
+    <h1 class="text-xl font-semibold text-center mb-4" style="color: #ff6b35;">Search Results</h1>
     <p class="text-center mb-4 text-gray-300">Found {{ results|length }} matching symbols.</p>
     <div class="overflow-x-auto">
         <table class="table-auto w-full text-left whitespace-no-wrap">
@@ -51,7 +51,7 @@
         </table>
     </div>
     <div class="text-center mt-4">
-        <a href="{{ url_for('search_bp.token') }}" class="text-blue-400 hover:text-blue-300 hover:underline">New search</a>
+        <a href="{{ url_for('search_bp.token') }}" class="hover:underline" style="color: #ff6b35;" onmouseover="this.style.color='#ff9500'" onmouseout="this.style.color='#ff6b35'">New search</a>
     </div>
 </div>
 {% endblock %}

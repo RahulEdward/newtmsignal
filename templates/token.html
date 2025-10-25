@@ -32,14 +32,14 @@
             color: #9ca3af;
         }
         input[type="submit"] {
-            background-color: #3b82f6;
+            background-color: #ff6b35;
             color: #e5e7eb;
             border: none;
             border-radius: 0.375rem; /* 6px */
             cursor: pointer;
         }
         input[type="submit"]:hover {
-            background-color: #2563eb;
+            background-color: #ff9500;
         }
         /* Autocomplete styling */
         .ui-autocomplete {
@@ -56,7 +56,7 @@
             color: #e5e7eb;
         }
         .ui-menu-item:hover {
-            background-color: #3b82f6;
+            background-color: #ff6b35;
             color: #ffffff;
             cursor: pointer;
         }
@@ -103,11 +103,11 @@
 
 {% block content %}
 <div class="form-container mx-auto my-8">
-    <h1 class="text-xl font-bold mb-4 text-primary">Symbol Search</h1>
+    <h1 class="text-xl font-bold mb-4" style="color: #ff6b35;">Symbol Search</h1>
     <form action="/search" method="get" class="flex flex-col gap-4">
-        <input id="symbol-input" type="text" name="symbol" placeholder="Enter symbol" required class="input text-sm border-gray-700 focus:border-blue-600 focus:ring focus:ring-blue-600 focus:ring-opacity-50 rounded-md shadow-sm">
+        <input id="symbol-input" type="text" name="symbol" placeholder="Enter symbol" required class="input text-sm border-gray-700 focus:border-orange-500 focus:ring focus:ring-orange-500 focus:ring-opacity-50 rounded-md shadow-sm">
         <!-- Exchange dropdown menu -->
-        <select id="exchange-select" name="exchange" required class="input text-sm border-gray-700 focus:border-blue-600 focus:ring focus:ring-blue-600 focus:ring-opacity-50 rounded-md shadow-sm">
+        <select id="exchange-select" name="exchange" required class="input text-sm border-gray-700 focus:border-orange-500 focus:ring focus:ring-orange-500 focus:ring-opacity-50 rounded-md shadow-sm">
             <option value="">Select Exchange</option>
             <option value="NSE" selected>NSE</option>
             <option value="NFO">NFO</option>
@@ -118,7 +118,7 @@
             <option value="NSE_INDEX">NSE_INDEX</option>
             <option value="BSE_INDEX">BSE_INDEX</option>
         </select>
-        <input type="submit" value="SEARCH" class="btn bg-blue-600 hover:bg-blue-700 text-gray-200 font-bold py-2 px-4 rounded uppercase">
+        <input type="submit" value="SEARCH" class="btn text-gray-200 font-bold py-2 px-4 rounded uppercase" style="background-color: #ff6b35;" onmouseover="this.style.backgroundColor='#ff9500'" onmouseout="this.style.backgroundColor='#ff6b35'">
     </form>
 </div>
 {% endblock %}
