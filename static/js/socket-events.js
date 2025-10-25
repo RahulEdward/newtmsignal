@@ -24,14 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function showFlashMessage(bgColorClass, message) {
-        var flashMessage = document.createElement('div');
-        flashMessage.className = `fixed bottom-3 right-3 md:bottom-5 md:right-5 ${bgColorClass} text-white py-2 px-4 rounded-lg text-sm`;
-        flashMessage.textContent = message;
-        document.body.appendChild(flashMessage);
-        alertSound.play();
-        setTimeout(function() {
-            document.body.removeChild(flashMessage);
-        }, 5000);
+        // Flash messages disabled
+        console.log(`Flash message: ${message}`);
     }
 });
 

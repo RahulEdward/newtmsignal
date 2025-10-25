@@ -343,5 +343,5 @@ def logout():
         session.pop('FEED_TOKEN', None)
         print("User session cleared")
     
-    flash('You have been logged out successfully', 'success')
+    # Flash message removed
     return redirect(url_for('auth.login'))
