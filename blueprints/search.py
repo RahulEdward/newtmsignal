@@ -69,3 +69,16 @@ def get_suggestions():
     } for result in results[:10]]  # Limit to 10 suggestions
     
     return jsonify(suggestions)
+
+# Manual endpoint to trigger master contract download
+@search_bp.route('/download-master-contract')
+def download_master_contract():
+    if not session.get('logged_in'):
+        return redirect(url_for('auth.login'))
+    
+    try:
+        from database.master_contract_db import master_contract_download
+        result = master_contract_download()
+        return jsonify({'status': 'success', 'message': 'Master contract download initiated'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})

@@ -215,24 +215,42 @@ def delete_angel_temp_data(output_path):
 def master_contract_download():
     print("Downloading Master Contract")
     url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
-    output_path = 'tmp/angel.json'
-    try:
-        download_json_angel_data(url,output_path)
-        token_df = process_angel_json(output_path)
-        delete_angel_temp_data(output_path)
-        #token_df['token'] = pd.to_numeric(token_df['token'], errors='coerce').fillna(-1).astype(int)
-        
-        #token_df = token_df.drop_duplicates(subset='symbol', keep='first')
-
-        delete_symtoken_table()  # Consider the implications of this action
-        copy_from_dataframe(token_df)
-                
-        return socketio.emit('master_contract_download', {'status': 'success', 'message': 'Successfully Downloaded'})
-
     
+    # Create tmp directory if it doesn't exist
+    import os
+    os.makedirs('tmp', exist_ok=True)
+    output_path = 'tmp/angel.json'
+    
+    try:
+        print("Starting download from Angel Broking...")
+        download_json_angel_data(url, output_path)
+        print("Processing downloaded data...")
+        token_df = process_angel_json(output_path)
+        print("Cleaning up temporary files...")
+        delete_angel_temp_data(output_path)
+        
+        print("Clearing existing data...")
+        delete_symtoken_table()  # Consider the implications of this action
+        print("Inserting new data...")
+        copy_from_dataframe(token_df)
+        print(f"Master contract download completed successfully! Total symbols: {len(token_df)}")
+        
+        # Try to emit socket event, but don't fail if it doesn't work (Vercel serverless)
+        try:
+            return socketio.emit('master_contract_download', {'status': 'success', 'message': 'Successfully Downloaded'})
+        except:
+            print("Socket.IO emit failed (expected on serverless)")
+            return {'status': 'success', 'message': 'Successfully Downloaded'}
+
     except Exception as e:
-        print(str(e))
-        return socketio.emit('master_contract_download', {'status': 'error', 'message': str(e)})
+        print(f"Master contract download failed: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        try:
+            return socketio.emit('master_contract_download', {'status': 'error', 'message': str(e)})
+        except:
+            print("Socket.IO emit failed (expected on serverless)")
+            return {'status': 'error', 'message': str(e)}
 
 
 
@@ -275,12 +293,6 @@ def add_sample_data():
 
 def search_symbols(symbol, exchange):
     try:
-        # Ensure sample data exists
-        count = SymToken.query.count()
-        if count == 0:
-            print("No data found, adding sample data...")
-            add_sample_data()
-        
         # Case-insensitive search with ILIKE (PostgreSQL) or LIKE with UPPER (SQLite)
         if 'postgresql' in DATABASE_URL.lower():
             results = SymToken.query.filter(
@@ -295,6 +307,25 @@ def search_symbols(symbol, exchange):
             ).limit(50).all()
         
         print(f"Search for '{symbol}' in '{exchange}' returned {len(results)} results")
+        
+        # If no results and database is empty, add sample data as fallback
+        if not results:
+            count = SymToken.query.count()
+            if count == 0:
+                print("No data found, adding sample data as fallback...")
+                add_sample_data()
+                # Try search again with sample data
+                if 'postgresql' in DATABASE_URL.lower():
+                    results = SymToken.query.filter(
+                        SymToken.symbol.ilike(f'%{symbol}%'), 
+                        SymToken.exchange == exchange
+                    ).limit(50).all()
+                else:
+                    results = SymToken.query.filter(
+                        SymToken.symbol.like(f'%{symbol.upper()}%'), 
+                        SymToken.exchange == exchange
+                    ).limit(50).all()
+        
         return results
     except Exception as e:
         print(f"Search error: {e}")
