@@ -221,6 +221,19 @@ def download_symbols():
         traceback.print_exc()
         return jsonify({'status': 'error', 'message': str(e)})
 
+@app.route('/api/v1/test-webhook', methods=['POST'])
+def test_webhook():
+    """Test endpoint to check if webhook is working"""
+    try:
+        data = request.json
+        return jsonify({
+            'status': 'success', 
+            'message': 'Webhook is working!',
+            'received_data': data
+        })
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
 @app.errorhandler(404)
 def not_found_error(error):
     return jsonify({'status': 'error', 'message': 'Endpoint not found'}), 404

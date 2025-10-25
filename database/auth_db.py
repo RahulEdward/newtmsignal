@@ -258,6 +258,25 @@ def get_api_key_dbquery(user_id):
         traceback.print_exc()
         return None
 
+def validate_api_key(api_key):
+    """Validate API key and return user_id if valid"""
+    if not api_key:
+        print("ERROR in validate_api_key: api_key is empty")
+        return None
+        
+    try:
+        api_key_obj = ApiKeys.query.filter_by(api_key=api_key).first()
+        if api_key_obj:
+            print(f"Valid API key found for user_id: {api_key_obj.user_id}")
+            return api_key_obj.user_id
+        else:
+            print(f"Invalid API key: {api_key}")
+            return None
+    except Exception as e:
+        print(f"ERROR while validating API key: {str(e)}")
+        traceback.print_exc()
+        return None
+
 # User management functions
 
 def create_user(username, user_id, apikey, is_admin=False):

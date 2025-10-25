@@ -115,13 +115,14 @@ def place_smart_order():
                 'message': f'Missing mandatory field(s): {", ".join(missing_fields)}'
             }), 400
 
-        login_username = os.getenv('LOGIN_USERNAME')
-        current_api_key = get_api_key(login_username)
-               
-
-        # Check if the provided Placeorder Request API key matches the Current App API Key
-        if current_api_key != data['apikey']:
-            return jsonify({'status': 'error', 'message': 'Invalid TM-Algo apikey'}), 403
+        # Validate API key against any user in the database
+        from database.auth_db import validate_api_key
+        user_id = validate_api_key(data['apikey'])
+        
+        if not user_id:
+            return jsonify({'status': 'error', 'message': 'Invalid API key'}), 403
+        
+        print(f"Valid API key for user: {user_id}")
 
         
         #print(f'placesmartorder_resp : {place_smartorder_api(data)}')
