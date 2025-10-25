@@ -31,7 +31,27 @@ def tradingview_json():
         user_id = session.get('user_id')
         api_key = get_api_key(user_id)
         
-        print(f"DEBUG - Using API key from database: {api_key}")
+        print(f"DEBUG - User ID: {user_id}")
+        print(f"DEBUG - API key from database: {api_key}")
+        
+        # If no API key found, generate a new platform key
+        if not api_key:
+            print("No API key found, generating new platform key...")
+            from blueprints.apikey import generate_api_key
+            from database.auth_db import upsert_api_key
+            api_key = generate_api_key(user_id)
+            upsert_api_key(user_id, api_key)
+            print(f"Generated new API key: {api_key}")
+        
+        # Validate if it's a platform key
+        from blueprints.apikey import is_platform_api_key
+        if not is_platform_api_key(api_key, user_id):
+            print("Detected broker API key, generating platform key...")
+            from blueprints.apikey import generate_api_key
+            from database.auth_db import upsert_api_key
+            api_key = generate_api_key(user_id)
+            upsert_api_key(user_id, api_key)
+            print(f"Generated platform API key: {api_key}")
         
         # Search for the symbol in the database to get the exchange segment
         symbols = search_symbols(symbol_input, exchange)
